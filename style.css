@@ -1,39 +1,41 @@
-body {
-    font-family: Arial, sans-serif;
+/* General tile styles */
+.tile {
+    display: inline-block;
+    width: 100px; /* Tile size */
+    height: 100px;
+    margin: 5px;
     text-align: center;
-    background-color: #f5f5f5;
-    color: #333;
-}
-
-h1 {
-    color: #444;
-}
-
-#game-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 20px auto;
-    width: 80%;
-    max-width: 600px;
-}
-
-.word-card {
-    background-color: #e0e0e0;
-    padding: 10px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    text-align: center;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-.word-card.selected {
-    background-color: #90caf9;
-    color: white;
-}
-
-#feedback {
+    line-height: 100px;
+    background-color: lightblue;
+    border: 2px solid #333;
     font-weight: bold;
-    margin: 10px;
+    cursor: pointer;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+/* When tiles are in a correct group */
+.correct-group {
+    background-color: gold;
+    color: black;
+    animation: moveToBottom 0.8s ease forwards; /* Animation applied here */
+}
+
+/* Animation for moving the tiles down */
+@keyframes moveToBottom {
+    0% {
+        transform: translateY(0); /* Start position */
+    }
+    100% {
+        transform: translateY(300px); /* Moves down 300px */
+        opacity: 0; /* Fade out */
+    }
+}
+
+/* Bottom section where correct answers appear */
+#correct-answers {
+    border-top: 2px solid #333;
+    padding: 10px;
+    min-height: 50px; /* Space for moved tiles */
+    margin-top: 20px;
+    background-color: #f9f9f9;
 }
