@@ -1,54 +1,32 @@
 const words = [
-  { word: "Bluey", group: "Bluey Characters" },
-  { word: "Bingo", group: "Bluey Characters" },
-  { word: "Bandit", group: "Bluey Characters" },
-  { word: "Chilli", group: "Bluey Characters" },
-  { word: "Broncos", group: "Brisbane Teams" },
-  { word: "Dolphins", group: "Brisbane Teams" },
-  { word: "Lions", group: "Brisbane Teams" },
-  { word: "Heat", group: "Brisbane Teams" },
-  { word: "Wallaby", group: "Native Australian Species" },
-  { word: "Platypus", group: "Native Australian Species" },
-  { word: "Kookaburra", group: "Native Australian Species" },
-  { word: "Koala", group: "Native Australian Species" },
-  { word: "Squirrel", group: "Red objects" },
-  { word: "Fox", group: "Red objects" },
-  { word: "Apple", group: "Red objects" },
-  { word: "Cabbage", group: "Red objects" }
+    { word: "Bluey", group: "Bluey Characters", difficulty: "easy" },
+    { word: "Bingo", group: "Bluey Characters", difficulty: "easy" },
+    { word: "Bandit", group: "Bluey Characters", difficulty: "easy" },
+    { word: "Chilli", group: "Bluey Characters", difficulty: "easy" },
+    { word: "Broncos", group: "Brisbane Teams", difficulty: "medium" },
+    { word: "Dolphins", group: "Brisbane Teams", difficulty: "medium" },
+    { word: "Lions", group: "Brisbane Teams", difficulty: "medium" },
+    { word: "Heat", group: "Brisbane Teams", difficulty: "medium" },
+    { word: "Wallaby", group: "Native Australian Species", difficulty: "hard" },
+    { word: "Platypus", group: "Native Australian Species", difficulty: "hard" },
+    { word: "Kookaburra", group: "Native Australian Species", difficulty: "hard" },
+    { word: "Koala", group: "Native Australian Species", difficulty: "hard" },
 ];
 
+const difficulties = {
+    easy: "#8bc34a", // Green
+    medium: "#ffeb3b", // Yellow
+    hard: "#2196f3", // Blue
+};
+
 const gameContainer = document.getElementById("game-container");
+const resultContainer = document.getElementById("result-container");
 const feedback = document.getElementById("feedback");
-const attemptsLeft = document.getElementById("attempts");
 const submitButton = document.getElementById("submit-btn");
-const correctAnswersContainer = document.getElementById("correct-answers");
-const howToPlayBtn = document.getElementById("how-to-play-btn");
-const modal = document.getElementById("how-to-play-modal");
-const closeBtn = document.querySelector(".close-btn");
-
-// Show the modal when the button is clicked
-howToPlayBtn.addEventListener("click", () => {
-    modal.style.display = "block";
-});
-
-// Close the modal when the close button is clicked
-closeBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-});
-
-// Close the modal when clicking outside of the modal content
-window.addEventListener("click", (event) => {
-    if (event.target === modal) {
-        modal.style.display = "none";
-    }
-});
-
 let selectedWords = [];
-let attempts = 4;
 
-// Shuffle words and render them
+// Shuffle and render words
 const shuffledWords = words.sort(() => Math.random() - 0.5);
-
 shuffledWords.forEach(item => {
     const div = document.createElement("div");
     div.className = "word-card";
@@ -67,49 +45,41 @@ function toggleSelection(div, word) {
     }
 }
 
-submitButton.addEventListener("click", checkGroup);
-
-function checkGroup() {
+submitButton.addEventListener("click", () => {
     if (selectedWords.length !== 4) {
         feedback.textContent = "Select exactly 4 words!";
         feedback.style.color = "red";
         return;
     }
 
-    // Check if all selected words are in the same group
     const group = selectedWords[0].group;
+    const difficulty = selectedWords[0].difficulty;
     const allMatch = selectedWords.every(word => word.group === group);
 
     if (allMatch) {
-        feedback.textContent = `Bingo! Group: ${group}`;
+        feedback.textContent = `Correct!`;
         feedback.style.color = "green";
 
-        // Add the correct group to the "Correct Answers" section
-        const groupDiv = document.createElement("div");
-        groupDiv.className = "correct-group";
-        groupDiv.textContent = `${group}: ${selectedWords.map(w => w.word).join(", ")}`;
-        correctAnswersContainer.appendChild(groupDiv);
-
-        // Remove the selected words from the game
-        selectedWords.forEach(word => {
-            const wordCard = [...gameContainer.children].find(el => el.textContent === word.word);
-            if (wordCard) wordCard.remove();
-        });
-
-        selectedWords = [];
-    } else {
-        feedback.textContent = "Stupid!";
-        feedback.style.color = "red";
-        attempts--;
-        attemptsLeft.textContent = attempts;
-
-        if (attempts === 0) {
-            feedback.textContent = "Game Over! Try again.";
-            submitButton.disabled = true;
+        // Create a result row with colored blocks
+        const resultRow = document.createElement("div");
+        resultRow.className = "result-row";
+        for (let i = 0; i < 4; i++) {
+            const block = document.createElement("div");
+            block.className = "result-block";
+            block.style.backgroundColor = difficulties[difficulty];
+            resultRow.appendChild(block);
         }
+        resultContainer.appendChild(resultRow);
+
+        selectedWords.forEach(word => {
+            const card = [...gameContainer.children].find(el => el.textContent === word.word);
+            if (card) card.remove();
+        });
+    } else {
+        feedback.textContent = "Incorrect! Try again.";
+        feedback.style.color = "red";
     }
 
-    // Clear selections
     document.querySelectorAll(".word-card.selected").forEach(div => div.classList.remove("selected"));
     selectedWords = [];
-}
+});
