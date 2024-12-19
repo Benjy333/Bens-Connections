@@ -1,26 +1,27 @@
 const words = [
-    { word: "Couch", group: "Ultimate Games Master" },
-    { word: "Bed", group: "Ultimate Games Master" },
-    { word: "TV", group: "Ultimate Games Master" },
-    { word: "TV Unit", group: "Ultimate Games Master" },
-    { word: "Chaise", group: "Cake Provider" },
-    { word: "Dining Table", group: "Cake Provider" },
-    { word: "Plants", group: "Cake Provider" },
-    { word: "Dining Chairs", group: "Cake Provider" },
-    { word: "Desk", group: "Action Man" },
-    { word: "Fridge", group: "Action Man" },
-    { word: "Washing Machine", group: "Action Man" },
-    { word: "IcE BaTh BaBy!!!", group: "Action Man" },
-    { word: "Electricity", group: "T Dog" },
-    { word: "WiFi", group: "T Dog" },
-    { word: "Gas", group: "T Dog" },
-    { word: "Mattress", group: "T Dog" },
+  { word: "Bluey", group: "Bluey Characters" },
+  { word: "Bingo", group: "Bluey Characters" },
+  { word: "Bandit", group: "Bluey Characters" },
+  { word: "Chilli", group: "Bluey Characters" },
+  { word: "Broncos", group: "Brisbane Teams" },
+  { word: "Dolphins", group: "Brisbane Teams" },
+  { word: "Lions", group: "Brisbane Teams" },
+  { word: "Heat", group: "Brisbane Teams" },
+  { word: "Wallaby", group: "Native Australian Species" },
+  { word: "Platypus", group: "Native Australian Species" },
+  { word: "Kookaburra", group: "Native Australian Species" },
+  { word: "Koala", group: "Native Australian Species" },
+  { word: "Squirrel", group: "Red objects" },
+  { word: "Fox", group: "Red objects" },
+  { word: "Apple", group: "Red objects" },
+  { word: "Cabbage", group: "Red objects" }
 ];
 
 const gameContainer = document.getElementById("game-container");
 const feedback = document.getElementById("feedback");
 const attemptsLeft = document.getElementById("attempts");
 const submitButton = document.getElementById("submit-btn");
+const correctAnswersContainer = document.getElementById("correct-answers");
 
 let selectedWords = [];
 let attempts = 4;
@@ -51,6 +52,7 @@ submitButton.addEventListener("click", checkGroup);
 function checkGroup() {
     if (selectedWords.length !== 4) {
         feedback.textContent = "Select exactly 4 words!";
+        feedback.style.color = "red";
         return;
     }
 
@@ -59,15 +61,28 @@ function checkGroup() {
     const allMatch = selectedWords.every(word => word.group === group);
 
     if (allMatch) {
-        feedback.textContent = `Correct! Group: ${group}`;
+        feedback.textContent = `Bingo! Group: ${group}`;
+        feedback.style.color = "green";
+
+        // Add the correct group to the "Correct Answers" section
+        const groupDiv = document.createElement("div");
+        groupDiv.className = "correct-group";
+        groupDiv.textContent = `${group}: ${selectedWords.map(w => w.word).join(", ")}`;
+        correctAnswersContainer.appendChild(groupDiv);
+
+        // Remove the selected words from the game
         selectedWords.forEach(word => {
-            document.querySelector(`.word-card:contains("${word.word}")`).remove();
+            const wordCard = [...gameContainer.children].find(el => el.textContent === word.word);
+            if (wordCard) wordCard.remove();
         });
+
         selectedWords = [];
     } else {
-        feedback.textContent = "Incorrect group!";
+        feedback.textContent = "Stupid!";
+        feedback.style.color = "red";
         attempts--;
         attemptsLeft.textContent = attempts;
+
         if (attempts === 0) {
             feedback.textContent = "Game Over! Try again.";
             submitButton.disabled = true;
