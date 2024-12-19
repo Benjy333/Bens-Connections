@@ -22,6 +22,26 @@ const feedback = document.getElementById("feedback");
 const attemptsLeft = document.getElementById("attempts");
 const submitButton = document.getElementById("submit-btn");
 const correctAnswersContainer = document.getElementById("correct-answers");
+const howToPlayBtn = document.getElementById("how-to-play-btn");
+const modal = document.getElementById("how-to-play-modal");
+const closeBtn = document.querySelector(".close-btn");
+
+// Show the modal when the button is clicked
+howToPlayBtn.addEventListener("click", () => {
+    modal.style.display = "block";
+});
+
+// Close the modal when the close button is clicked
+closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+});
+
+// Close the modal when clicking outside of the modal content
+window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});
 
 let selectedWords = [];
 let attempts = 4;
