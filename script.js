@@ -13,17 +13,16 @@ const words = [
     { word: "Koala", group: "Native Australian Species", difficulty: "hard" },
 ];
 
-const difficulties = {
-    easy: "#8bc34a", // Green
-    medium: "#ffeb3b", // Yellow
-    hard: "#2196f3", // Blue
-};
-
 const gameContainer = document.getElementById("game-container");
 const resultContainer = document.getElementById("result-container");
 const feedback = document.getElementById("feedback");
 const submitButton = document.getElementById("submit-btn");
+const attemptsLeft = document.getElementById("attempts");
+const finalResult = document.getElementById("final-result");
+const finalMessage = document.getElementById("final-message");
+
 let selectedWords = [];
+let attempts = 4;
 
 // Shuffle and render words
 const shuffledWords = words.sort(() => Math.random() - 0.5);
@@ -53,33 +52,51 @@ submitButton.addEventListener("click", () => {
     }
 
     const group = selectedWords[0].group;
-    const difficulty = selectedWords[0].difficulty;
     const allMatch = selectedWords.every(word => word.group === group);
 
     if (allMatch) {
-        feedback.textContent = `Correct!`;
+        feedback.textContent = `Correct! Group: ${group}`;
         feedback.style.color = "green";
 
-        // Create a result row with colored blocks
+        // Add a new row of correct blocks
         const resultRow = document.createElement("div");
-        resultRow.className = "result-row";
-        for (let i = 0; i < 4; i++) {
-            const block = document.createElement("div");
-            block.className = "result-block";
-            block.style.backgroundColor = difficulties[difficulty];
-            resultRow.appendChild(block);
-        }
+        resultRow.className = "correct-group";
+        resultRow.textContent = `${group}: ${selectedWords.map(w => w.word).join(", ")}`;
         resultContainer.appendChild(resultRow);
 
         selectedWords.forEach(word => {
             const card = [...gameContainer.children].find(el => el.textContent === word.word);
             if (card) card.remove();
         });
+
+        // Check if the game is over (all groups solved)
+        if (gameContainer.children.length === 0) {
+            showFinalResult(true);
+        }
     } else {
         feedback.textContent = "Incorrect! Try again.";
         feedback.style.color = "red";
+        attempts--;
+        attemptsLeft.textContent = attempts;
+
+        if (attempts === 0) {
+            showFinalResult(false);
+        }
     }
 
     document.querySelectorAll(".word-card.selected").forEach(div => div.classList.remove("selected"));
     selectedWords = [];
 });
+
+function showFinalResult(success) {
+    finalResult.classList.remove("hidden");
+    if (success) {
+        finalResult.classList.add("success");
+        finalResult.classList.remove("failure");
+        finalMessage.textContent = `Success! You solved all groups with ${attempts} attempts left.`;
+    } else {
+        finalResult.classList.add("failure");
+        finalResult.classList.remove("success");
+        finalMessage.textContent = "Game Over! You've used all attempts. Better luck next time!";
+    }
+}
