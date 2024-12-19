@@ -11,6 +11,10 @@ const words = [
     { word: "Platypus", group: "Native Australian Species", difficulty: "hard" },
     { word: "Kookaburra", group: "Native Australian Species", difficulty: "hard" },
     { word: "Koala", group: "Native Australian Species", difficulty: "hard" },
+    { word: "Squirrel", group: "Red objects", difficulty: "tricky" },
+    { word: "Fox", group: "Red objects", difficulty: "tricky" },
+    { word: "Apple", group: "Red objects", difficulty: "tricky" },
+    { word: "Cabbage", group: "Red objects", difficulty: "tricky" },
 ];
 
 const gameContainer = document.getElementById("game-container");
