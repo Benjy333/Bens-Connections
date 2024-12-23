@@ -11,19 +11,22 @@ const words = [
     { word: "Platypus", group: "Native Australian Species", difficulty: "hard" },
     { word: "Kookaburra", group: "Native Australian Species", difficulty: "hard" },
     { word: "Koala", group: "Native Australian Species", difficulty: "hard" },
+    { word: "Squirrel", group: "Red objects", difficulty: "tricky" },
+    { word: "Fox", group: "Red objects", difficulty: "tricky" },
+    { word: "Apple", group: "Red objects", difficulty: "tricky" },
+    { word: "Cabbage", group: "Red objects", difficulty: "tricky" },
 ];
 
 const gameContainer = document.getElementById("game-container");
 const correctAnswersContainer = document.getElementById("correct-answers");
 const feedback = document.getElementById("feedback");
 const submitButton = document.getElementById("submit-btn");
-const finalResult = document.getElementById("final-result");
-const finalMessage = document.getElementById("final-message");
+const resultsScreen = document.getElementById("results-screen");
 
 let selectedWords = [];
 let attempts = 4;
 
-// Shuffle words and render
+// Shuffle and render
 const shuffledWords = words.sort(() => Math.random() - 0.5);
 shuffledWords.forEach(item => {
     const div = document.createElement("div");
@@ -43,9 +46,7 @@ function toggleSelection(div, word) {
     }
 }
 
-submitButton.addEventListener("click", checkGroup);
-
-function checkGroup() {
+submitButton.addEventListener("click", () => {
     if (selectedWords.length !== 4) {
         feedback.textContent = "Select exactly 4 words!";
         feedback.style.color = "red";
@@ -55,14 +56,21 @@ function checkGroup() {
     const group = selectedWords[0].group;
     const allMatch = selectedWords.every(word => word.group === group);
 
+    const resultRow = document.createElement("div");
+    resultRow.className = "result-row";
+
+    for (let i = 0; i < 4; i++) {
+        const block = document.createElement("div");
+        block.className = "result-block";
+        block.classList.add(allMatch ? "success" : "failure");
+        resultRow.appendChild(block);
+    }
+
+    resultsScreen.appendChild(resultRow);
+
     if (allMatch) {
         feedback.textContent = `Correct! Group: ${group}`;
         feedback.style.color = "green";
-
-        const groupDiv = document.createElement("div");
-        groupDiv.className = "correct-group";
-        groupDiv.textContent = `${group}: ${selectedWords.map(w => w.word).join(", ")}`;
-        correctAnswersContainer.appendChild(groupDiv);
 
         selectedWords.forEach(word => {
             const card = [...gameContainer.children].find(el => el.textContent === word.word);
@@ -70,7 +78,7 @@ function checkGroup() {
         });
 
         if (gameContainer.children.length === 0) {
-            showFinalResult(true);
+            feedback.textContent = "Congratulations! You've solved all groups!";
         }
     } else {
         feedback.textContent = "Incorrect! Try again.";
@@ -79,18 +87,11 @@ function checkGroup() {
         document.getElementById("attempts").textContent = attempts;
 
         if (attempts === 0) {
-            showFinalResult(false);
+            feedback.textContent = "Game Over! You've used all attempts.";
+            submitButton.disabled = true;
         }
     }
 
-    selectedWords.forEach(div => div.classList.remove("selected"));
+    document.querySelectorAll(".word-card.selected").forEach(div => div.classList.remove("selected"));
     selectedWords = [];
-}
-
-function showFinalResult(success) {
-    finalResult.classList.remove("hidden");
-    finalResult.classList.add(success ? "success" : "failure");
-    finalMessage.textContent = success
-        ? `Success! You solved all groups with ${attempts} attempts left.`
-        : "Game Over! You've used all attempts.";
-}
+});
