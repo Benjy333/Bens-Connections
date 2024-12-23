@@ -125,15 +125,24 @@ h1 {
     width: 50px;
     height: 50px;
     border-radius: 5px;
-    background-color: #ccc; /* Default gray */
+    background-color: #ccc; /* Default gray for failure */
 }
 
-.result-block.success {
-    background-color: #8bc34a; /* Green for success */
+/* Difficulty-based colors for success */
+.result-block.easy {
+    background-color: #8bc34a; /* Green for easy */
 }
 
-.result-block.failure {
-    background-color: #f44336; /* Red for failure */
+.result-block.medium {
+    background-color: #ffeb3b; /* Yellow for medium */
+}
+
+.result-block.hard {
+    background-color: #2196f3; /* Blue for hard */
+}
+
+.result-block.tricky {
+    background-color: #9c27b0; /* Purple for tricky */
 }
 
 /* Modal container */
