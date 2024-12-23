@@ -54,6 +54,7 @@ submitButton.addEventListener("click", () => {
     }
 
     const group = selectedWords[0].group;
+    const difficulty = selectedWords[0].difficulty;
     const allMatch = selectedWords.every(word => word.group === group);
 
     const resultRow = document.createElement("div");
@@ -62,7 +63,13 @@ submitButton.addEventListener("click", () => {
     for (let i = 0; i < 4; i++) {
         const block = document.createElement("div");
         block.className = "result-block";
-        block.classList.add(allMatch ? "success" : "failure");
+
+        if (allMatch) {
+            block.classList.add(difficulty); // Assign difficulty color
+        } else {
+            block.classList.add("failure"); // Gray for failure
+        }
+
         resultRow.appendChild(block);
     }
 
