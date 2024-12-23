@@ -17,13 +17,28 @@ const words = [
     { word: "Cabbage", group: "Red objects", difficulty: "tricky" },
 ];
 
+const difficulties = {
+    easy: "#8bc34a",      // Green
+    medium: "#ffeb3b",    // Yellow
+    hard: "#2196f3",      // Blue
+    tricky: "#9c27b0"     // Purple
+};
+
 const gameContainer = document.getElementById("game-container");
-const resultContainer = document.getElementById("result-container");
 const feedback = document.getElementById("feedback");
-const submitButton = document.getElementById("submit-btn");
 const attemptsLeft = document.getElementById("attempts");
-const finalResult = document.getElementById("final-result");
-const finalMessage = document.getElementById("final-message");
+const submitButton = document.getElementById("submit-btn");
+const correctAnswersContainer = document.getElementById("correct-answers");
+const howToPlayBtn = document.getElementById("how-to-play-btn");
+const modal = document.getElementById("how-to-play-modal");
+const closeBtn = document.querySelector(".close-btn");
+
+// Modal functionality
+howToPlayBtn.addEventListener("click", () => modal.style.display = "block");
+closeBtn.addEventListener("click", () => modal.style.display = "none");
+window.addEventListener("click", (event) => {
+    if (event.target === modal) modal.style.display = "none";
+});
 
 let selectedWords = [];
 let attempts = 4;
@@ -48,7 +63,9 @@ function toggleSelection(div, word) {
     }
 }
 
-submitButton.addEventListener("click", () => {
+submitButton.addEventListener("click", checkGroup);
+
+function checkGroup() {
     if (selectedWords.length !== 4) {
         feedback.textContent = "Select exactly 4 words!";
         feedback.style.color = "red";
@@ -59,24 +76,23 @@ submitButton.addEventListener("click", () => {
     const allMatch = selectedWords.every(word => word.group === group);
 
     if (allMatch) {
-        feedback.textContent = `Correct! Group: ${group}`;
-        feedback.style.color = "green";
+        const difficulty = selectedWords[0].difficulty;
 
-        // Add a new row of correct blocks
-        const resultRow = document.createElement("div");
-        resultRow.className = "correct-group";
-        resultRow.textContent = `${group}: ${selectedWords.map(w => w.word).join(", ")}`;
-        resultContainer.appendChild(resultRow);
+        feedback.textContent = `Correct! Group: ${group} (${difficulty.toUpperCase()})`;
+        feedback.style.color = difficulties[difficulty];
+
+        // Add the correct group to the "Correct Answers" section
+        const groupDiv = document.createElement("div");
+        groupDiv.className = "correct-group";
+        groupDiv.style.backgroundColor = difficulties[difficulty]; // Add difficulty color
+        groupDiv.style.color = "white";
+        groupDiv.textContent = `${group}: ${selectedWords.map(w => w.word).join(", ")}`;
+        correctAnswersContainer.appendChild(groupDiv);
 
         selectedWords.forEach(word => {
             const card = [...gameContainer.children].find(el => el.textContent === word.word);
             if (card) card.remove();
         });
-
-        // Check if the game is over (all groups solved)
-        if (gameContainer.children.length === 0) {
-            showFinalResult(true);
-        }
     } else {
         feedback.textContent = "Incorrect! Try again.";
         feedback.style.color = "red";
@@ -84,23 +100,11 @@ submitButton.addEventListener("click", () => {
         attemptsLeft.textContent = attempts;
 
         if (attempts === 0) {
-            showFinalResult(false);
+            feedback.textContent = "Game Over! Reset to play again.";
+            submitButton.disabled = true;
         }
     }
 
     document.querySelectorAll(".word-card.selected").forEach(div => div.classList.remove("selected"));
     selectedWords = [];
-});
-
-function showFinalResult(success) {
-    finalResult.classList.remove("hidden");
-    if (success) {
-        finalResult.classList.add("success");
-        finalResult.classList.remove("failure");
-        finalMessage.textContent = `Success! You solved all groups with ${attempts} attempts left.`;
-    } else {
-        finalResult.classList.add("failure");
-        finalResult.classList.remove("success");
-        finalMessage.textContent = "Game Over! You've used all attempts. Better luck next time!";
-    }
 }
