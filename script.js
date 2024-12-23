@@ -18,11 +18,17 @@ const words = [
 ];
 
 const gameContainer = document.getElementById("game-container");
+const feedback = document.getElementById("feedback");
+const submitButton = document.getElementById("submit-btn");
 const shuffleButton = document.getElementById("shuffle-btn");
-const howToPlayBtn = document.getElementById("how-to-play-btn");
 const modal = document.getElementById("how-to-play-modal");
 const closeBtn = document.querySelector(".close-btn");
+const attemptsElement = document.getElementById("attempts");
 
+let selectedWords = [];
+let attempts = 4;
+
+// Function to shuffle the grid
 function shuffleGrid() {
     const shuffledWords = words.sort(() => Math.random() - 0.5);
     gameContainer.innerHTML = "";
@@ -30,15 +36,78 @@ function shuffleGrid() {
         const div = document.createElement("div");
         div.className = "word-card";
         div.textContent = item.word;
+        div.addEventListener("click", () => toggleSelection(div, item));
         gameContainer.appendChild(div);
     });
 }
 
-shuffleButton.addEventListener("click", shuffleGrid);
-howToPlayBtn.addEventListener("click", () => (modal.style.display = "block"));
-closeBtn.addEventListener("click", () => (modal.style.display = "none"));
-window.addEventListener("click", (event) => {
-    if (event.target === modal) modal.style.display = "none";
+// Function to toggle word selection
+function toggleSelection(div, word) {
+    if (div.classList.contains("selected")) {
+        div.classList.remove("selected");
+        selectedWords = selectedWords.filter((w) => w.word !== word.word);
+    } else if (selectedWords.length < 4) {
+        div.classList.add("selected");
+        selectedWords.push(word);
+    }
+}
+
+// Event listener for the Submit button
+submitButton.addEventListener("click", () => {
+    if (selectedWords.length !== 4) {
+        feedback.textContent = "Select exactly 4 words!";
+        feedback.style.color = "red";
+        return;
+    }
+
+    const group = selectedWords[0].group;
+    const allMatch = selectedWords.every((word) => word.group === group);
+
+    if (allMatch) {
+        feedback.textContent = `Correct! Group: ${group}`;
+        feedback.style.color = "green";
+        // Remove selected words from the grid
+        selectedWords.forEach((word) => {
+            const card = [...gameContainer.children].find((el) => el.textContent === word.word);
+            if (card) card.remove();
+        });
+        selectedWords = [];
+    } else {
+        feedback.textContent = "Incorrect! Try again.";
+        feedback.style.color = "red";
+        attempts--;
+        attemptsElement.textContent = attempts;
+
+        if (attempts === 0) {
+            feedback.textContent = "Game Over! You've used all attempts.";
+            submitButton.disabled = true;
+        }
+    }
+
+    // Clear selections
+    document.querySelectorAll(".word-card.selected").forEach((div) => div.classList.remove("selected"));
+    selectedWords = [];
 });
 
+// Event listener for the Shuffle button
+shuffleButton.addEventListener("click", shuffleGrid);
+
+// Event listener for the How to Play button
+document.getElementById("how-to-play-btn").addEventListener("click", () => {
+    modal.style.display = "block";
+});
+
+// Close modal when clicking the close button
+closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+});
+
+// Close modal when clicking outside the modal
+window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});
+
+// Initial grid render
 shuffleGrid();
