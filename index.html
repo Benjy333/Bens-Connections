@@ -1,60 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bens Connections Game</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h1>Connections Game</h1>
-    <p>Group the words into 4 categories!</p>
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
-    <!-- Game Container -->
-    <div id="game-container">
-        <!-- Words will be dynamically added here -->
+const words = ["react", "python", "coding", "puzzle", "anagram", "javascript"];
+
+const shuffleWord = (word) => {
+  return word
+    .split("")
+    .sort(() => Math.random() - 0.5)
+    .join("");
+};
+
+export default function AnagramGame() {
+  const [originalWord, setOriginalWord] = useState("");
+  const [shuffledWord, setShuffledWord] = useState("");
+  const [input, setInput] = useState("");
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    generateNewWord();
+  }, []);
+
+  const generateNewWord = () => {
+    const word = words[Math.floor(Math.random() * words.length)];
+    setOriginalWord(word);
+    setShuffledWord(shuffleWord(word));
+    setInput("");
+    setMessage("");
+  };
+
+  const checkAnswer = () => {
+    if (input.toLowerCase() === originalWord) {
+      setMessage("Correct! Well done.");
+    } else {
+      setMessage("Try again!");
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-4 p-6">
+      <Card className="w-96 text-center p-4">
+        <CardContent>
+          <h2 className="text-xl font-bold mb-2">Anagram Game</h2>
+          <p className="text-lg">Unscramble the word: <strong>{shuffledWord}</strong></p>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="border p-2 mt-4 w-full rounded"
+            placeholder="Your answer"
+          />
+          <div className="flex justify-between mt-4">
+            <Button onClick={checkAnswer} className="bg-blue-500 text-white">Submit</Button>
+            <Button onClick={generateNewWord} className="bg-gray-500 text-white">New Word</Button>
+          </div>
+          {message && <p className="mt-4 text-lg font-bold">{message}</p>}
+        </CardContent>
+      </Card>
     </div>
-
-    <!-- Buttons -->
-    <button id="shuffle-btn">Shuffle Grid</button>
-    <p id="feedback"></p>
-    <button id="submit-btn">Submit Group</button>
-    <p>Attempts Left: <span id="attempts">4</span></p>
-
-    <!-- Results Screen -->
-    <div id="results-screen" style="display: none;">
-        <h2>Results</h2>
-        <!-- Colored rows for success/failure will appear here -->
-    </div>
-
-    <!-- How to Play Button -->
-    <button id="how-to-play-btn" class="how-to-play-button">How to Play</button>
-
-    <!-- Modal -->
-    <div id="how-to-play-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>How to Play</h2>
-            <p>Find groups of four items that share something in common.</p>
-            <ul>
-                <li>Select four items and tap <strong>'Submit'</strong> to check if your guess is correct.</li>
-                <li>Find the groups without making 4 mistakes!</li>
-                <li>Each group is assigned a color based on its difficulty:</li>
-                <ul>
-                    <li><span style="color: #8bc34a;">Easy</span>: Green</li>
-                    <li><span style="color: #ffeb3b;">Medium</span>: Yellow</li>
-                    <li><span style="color: #2196f3;">Hard</span>: Blue</li>
-                    <li><span style="color: #9c27b0;">Tricky</span>: Purple</li>
-                </ul>
-            </ul>
-            <p>Example Categories:</p>
-            <ul>
-                <li><strong>Instruments:</strong> Guitar, Piano, Trumpet, Drums</li>
-                <li><strong>Fruit:</strong> Apple, Banana, Orange, Grape</li>
-            </ul>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+  );
+}
